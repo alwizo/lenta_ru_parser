@@ -2,3 +2,5 @@
 .DS_Store/
 logs/
 vendor/
+parse_lib/
+App/.DS_Store
