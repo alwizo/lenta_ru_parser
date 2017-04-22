@@ -1,0 +1,14 @@
+{% extends "base.html" %}
+
+{% block title %}Home{% endblock %}
+
+{% block body %}
+
+        <h3>{{ post['post_title'] }}</h3>
+        <br>
+        <img src="{{ post.post_img|raw }}" ><br><br><br>
+        {{ post.post_text|raw }}<br><br>
+
+
+{% endblock %}
+
