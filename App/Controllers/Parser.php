@@ -47,7 +47,7 @@ class Parser extends \Core\Controller
 				if($img = $html->find('img[itemprop=image]', 0)){
 					$articles[$i]['img'] = $img->getAttribute('src');
 				}else{
-					$articles[$i]['img'] = 'Нет изображения';
+					$articles[$i]['img'] = '';
 				}
 
 				$text = str_get_html(strip_tags($element, '<p></p><a></a><img><script></script>'));
