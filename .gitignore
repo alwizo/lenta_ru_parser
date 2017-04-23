@@ -1,6 +1,6 @@
 .idea/
-.DS_Store/
+.DS_Store
 logs/
 vendor/
 parse_lib/
-App/.DS_Store
+App/.DS_Store/

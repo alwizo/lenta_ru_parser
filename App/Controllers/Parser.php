@@ -22,7 +22,7 @@ class Parser extends \Core\Controller
 
 		$articles = [];
 
-		for ( $i = 0; $i < 100; $i ++ ) {
+		for ( $i = 0; $i < 50; $i ++ ) {
 
 			$title = $xml->channel->item[ $i ]->title;
 			$articles[$i]['title'] = $title;
