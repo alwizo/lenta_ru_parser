@@ -22,6 +22,10 @@ class Home extends \Core\Controller
     {
 		$posts = Posts::getAll();
 
+		for($i = 0; $i < count($posts); $i++){
+			$posts[$i]['post_title'] = $this->cuttingStr($posts[$i]['post_title'], 50);
+		}
+
         View::renderTemplate('Home/index.html', ['posts' => $posts]);
     }
 
@@ -35,4 +39,12 @@ class Home extends \Core\Controller
 		}
 		View::renderTemplate('Home/show.html', ['post' => $post]);
     }
+
+	public function cuttingStr( $string, $length ) {
+		$string = strip_tags($string);
+		$string = mb_substr($string, 0, $length);
+		$string = rtrim($string, "!,.-");
+		$string = mb_substr($string, 0, strrpos($string, ' '));
+		return $string . '...';
+	}
 }
