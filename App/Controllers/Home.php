@@ -21,7 +21,6 @@ class Home extends \Core\Controller
     public function indexAction()
     {
 		$posts = Posts::getAll();
-		//var_dump($posts);
 
         View::renderTemplate('Home/index.html', ['posts' => $posts]);
     }
@@ -34,10 +33,6 @@ class Home extends \Core\Controller
 		} catch ( \Exception $e ) {
 			echo $e->getMessage();
 		}
-
-
-
-
 		View::renderTemplate('Home/show.html', ['post' => $post]);
     }
 }

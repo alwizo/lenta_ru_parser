@@ -22,12 +22,15 @@ class Parser extends \Core\Controller
 
 		$articles = [];
 
-		for ( $i = 0; $i < 5; $i ++ ) {
+		for ( $i = 0; $i < 100; $i ++ ) {
 
 			$title = $xml->channel->item[ $i ]->title;
 			$articles[$i]['title'] = $title;
 			$link =  $xml->channel->item[ $i ]->link;
 			$articles[$i]['link'] = $link;
+			$pubdate = $xml->channel->item[ $i ]->pubDate;
+			$pubdate = date('Y-m-d H:i:s', strtotime($pubdate));
+			$articles[$i]['pubdate'] = $pubdate;
 
 			$html = file_get_html("$link");
 			$e = $html->find('div[itemprop=articleBody]');
@@ -69,9 +72,12 @@ class Parser extends \Core\Controller
 
 
 		fputcsv($output, array('Название новости', 'Дата', 'Оригинальная ссылка на новость'));
+		$today = date('Y-m-d H:i:s', strtotime('last day'));
 
+		$daily_posts = Posts::getDaily($today);
 
-		Posts::getAllToCsv($output);
-
+		foreach ( $daily_posts as $daily_post ) {
+			fputcsv($output, $daily_post);
+		}
 	}
 }

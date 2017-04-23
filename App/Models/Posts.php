@@ -24,6 +24,11 @@ class Posts extends \Core\Model
         return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
 
+	/**
+	 * @param $id
+	 *
+	 * @return mixed
+	 */
 	public static function getOne($id)
 	{
 		$db = static::getDB();
@@ -36,19 +41,24 @@ class Posts extends \Core\Model
 		return $post;
     }
 
-    public static function insertAll ($articles)
+	/**
+	 * @param $articles
+	 */
+	public static function insertAll ($articles)
     {
     	$db = static::getDB();
 
     	foreach ($articles as $article){
 		    $title = $article['title'];
+		    $pubdate = $article['pubdate'];
 		    $text = $article['text'];
 		    $img = $article['img'];
 		    $link = $article['link'];
-		    $stmt = $db->prepare("INSERT INTO posts (post_title, post_text, post_img, post_link) 
-								VALUES (:title, :text, :img, :link) 
+		    $stmt = $db->prepare("INSERT INTO posts (post_pubdate, post_title, post_text, post_img, post_link) 
+								VALUES (:pubdate, :title, :text, :img, :link) 
 								ON DUPLICATE KEY UPDATE post_id=post_id");
 		    $stmt->bindParam(':title', $title);
+		    $stmt->bindParam(':pubdate', $pubdate);
 		    $stmt->bindParam(':text', $text);
 		    $stmt->bindParam(':img', $img);
 		    $stmt->bindParam(':link', $link);
@@ -56,19 +66,21 @@ class Posts extends \Core\Model
 	    }
     }
 
-	public static function getAllToCsv($output)
+	/**
+	 * @param $last_day
+	 *
+	 * @return mixed
+	 */
+	public static function getDaily($last_day)
 	{
 		$db = static::getDB();
-		$stmt = $db->prepare('SELECT post_title, post_pubdate, post_link FROM posts
-								WHERE post_pubdate = 2
+		$stmt = $db->prepare('SELECT post_title, post_pubdate, post_link 
+								FROM posts
+								WHERE post_pubdate > :last_day
  								ORDER BY post_pubdate DESC ');
-		while($row = $stmt->fetch(PDO::FETCH_ASSOC)){
-
-			echo '<pre>';
-			var_dump($row);
-			echo '</pre>';
-			fputcsv($output, $row);
-		}
-
+		$stmt->bindParam(':last_day', $last_day);
+		$stmt->execute();
+		$daily_posts = $stmt->fetchAll(PDO::FETCH_ASSOC);
+		return $daily_posts;
     }
 }
