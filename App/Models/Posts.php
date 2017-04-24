@@ -83,4 +83,14 @@ class Posts extends \Core\Model
 		$daily_posts = $stmt->fetchAll(PDO::FETCH_ASSOC);
 		return $daily_posts;
     }
+
+	public static function dateOfLastNews () {
+		$db = static::getDB();
+		$stmt = $db->query('SELECT MAX(post_pubdate)
+								FROM posts
+								 ');
+		$date = $stmt->fetch(PDO::FETCH_ASSOC);
+
+		return $date['MAX(post_pubdate)'];
+    }
 }

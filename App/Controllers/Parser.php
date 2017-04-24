@@ -20,38 +20,53 @@ class Parser extends \Core\Controller
 
 		$xml = simplexml_load_file( $this->rss_url );
 
+		$items = [];
+		foreach ( $xml->channel->item as $item ) {
+			$items[] = $item;
+		}
+
+
+
+		//узнать дату последней новости
+		 $last_news = Posts::dateOfLastNews();
+
+		//если в массиве $items есть новости позже этой даты - спарсить их
+
 		$articles = [];
 
-		for ( $i = 0; $i < 50; $i ++ ) {
+		for ( $i = 0; $i < count($items); $i ++ ) {
 
-			$title = $xml->channel->item[ $i ]->title;
-			$articles[$i]['title'] = $title;
-			$link =  $xml->channel->item[ $i ]->link;
-			$articles[$i]['link'] = $link;
-			$pubdate = $xml->channel->item[ $i ]->pubDate;
-			$pubdate = date('Y-m-d H:i:s', strtotime($pubdate));
-			$articles[$i]['pubdate'] = $pubdate;
+			if(strtotime($xml->channel->item[ $i ]->pubDate) > strtotime($last_news)){
+				$title = $xml->channel->item[ $i ]->title;
+				$articles[$i]['title'] = $title;
+				$link =  $xml->channel->item[ $i ]->link;
+				$articles[$i]['link'] = $link;
+				$pubdate = $xml->channel->item[ $i ]->pubDate;
+				$pubdate = date('Y-m-d H:i:s', strtotime($pubdate));
+				$articles[$i]['pubdate'] = $pubdate;
 
-			$html = file_get_html("$link");
-			$e = $html->find('div[itemprop=articleBody]');
+				$html = file_get_html("$link");
+				$e = $html->find('div[itemprop=articleBody]');
 
-			foreach($e as $element){
+				foreach($e as $element){
 
-				if($asides = $element->find('aside')){
-					foreach ($asides as $aside){
-						$aside->outertext = '';
+					if($asides = $element->find('aside')){
+						foreach ($asides as $aside){
+							$aside->outertext = '';
+						}
+
 					}
 
+					if($img = $html->find('img[itemprop=image]', 0)){
+						$articles[$i]['img'] = $img->getAttribute('src');
+					}else{
+						$articles[$i]['img'] = '';
+					}
+
+					$text = str_get_html(strip_tags($element, '<p></p><a></a><img><script></script>'));
+					$articles[$i]['text'] = $text;
 				}
 
-				if($img = $html->find('img[itemprop=image]', 0)){
-					$articles[$i]['img'] = $img->getAttribute('src');
-				}else{
-					$articles[$i]['img'] = '';
-				}
-
-				$text = str_get_html(strip_tags($element, '<p></p><a></a><img><script></script>'));
-				$articles[$i]['text'] = $text;
 			}
 
 		}
